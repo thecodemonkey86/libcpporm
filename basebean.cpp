@@ -19,7 +19,7 @@ void BaseBean::save()
          QList<QVariant>* params=getInsertParams();
         if (autoIncrement) {
 
-            int id=sqlCon->insert(query,params);
+            int id=sqlCon->insert(query,*params);
             if (id==-1) {
                 delete params;
                 throw new SqlException(sqlCon);
@@ -29,7 +29,7 @@ void BaseBean::save()
                 delete params;
             }
         } else {
-            if (!sqlCon->execute(query,params)) {
+            if (!sqlCon->execute(query,*params)) {
                 delete params;
                 throw new SqlException(sqlCon);
             } else {
@@ -46,7 +46,7 @@ void BaseBean::save()
             QString query("UPDATE " + getTableName()+ " SET "+updateFields+ " WHERE "+getUpdateCondition());
              QList<QVariant>* conditionParams=  getUpdateConditionParams();
             params->append(*conditionParams);
-            if (!sqlCon->execute(query,params)) {
+            if (!sqlCon->execute(query,*params)) {
                 delete params;
                 throw new SqlException(sqlCon);
             }

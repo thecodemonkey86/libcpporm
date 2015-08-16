@@ -51,6 +51,16 @@ public:
         return this;
     }
 
+    BeanQuery* andWhere(const QString &  whereCond, const QVariant&param) {
+        qu->andWhere(whereCond,param);
+        return this;
+    }
+
+    BeanQuery* andWhere(const QString &  whereCond) {
+        qu->andWhere(whereCond);
+        return this;
+    }
+
     //BeanQuery* where(const QString &  whereCond, const QList<QVariant>& params);
 
     T* queryOne() {
