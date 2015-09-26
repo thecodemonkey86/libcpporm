@@ -52,7 +52,7 @@ public:
     }
 
     BeanQuery* andWhere(const QString &  whereCond, const QVariant&param) {
-        qu->andWhere(whereCond,param);
+        //qu->andWhere(whereCond,param);
         return this;
     }
 
