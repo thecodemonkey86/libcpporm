@@ -13,6 +13,8 @@ TEMPLATE = lib
 
 DEFINES += ORM_LIBRARY
 
+CONFIG += c++11
+
 SOURCES += \
     basebean.cpp
 #    ormforeign.cpp \

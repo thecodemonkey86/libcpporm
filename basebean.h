@@ -4,6 +4,9 @@
 #include "orm_global.h"
 #include "sqlcon.h"
 #include <QSet>
+#include <memory>
+
+using namespace std;
 
 class ORMSHARED_EXPORT BaseBean
 {
@@ -29,7 +32,7 @@ protected:
     bool autoIncrement, idModified;
 public:
     virtual QString getTableName()=0;
-    static void setConnection(Sql*sqlCon);
+    static void setConnection(Sql* sqlCon);
     void setInsertNew();
 };
 

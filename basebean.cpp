@@ -22,7 +22,7 @@ void BaseBean::save()
             int id=sqlCon->insert(query,*params);
             if (id==-1) {
                 delete params;
-                throw new SqlException(sqlCon);
+                throw SqlException(sqlCon, query);
             } else {
                 setAutoIncrementId(id);
                 insert = false;
@@ -30,8 +30,9 @@ void BaseBean::save()
             }
         } else {
             if (!sqlCon->execute(query,*params)) {
+                qDebug()<<sqlCon->printDebug(query,*params);
                 delete params;
-                throw new SqlException(sqlCon);
+                throw SqlException(sqlCon, query);
             } else {
                 insert = false;
                 delete params;
@@ -48,7 +49,7 @@ void BaseBean::save()
             params->append(*conditionParams);
             if (!sqlCon->execute(query,*params)) {
                 delete params;
-                throw new SqlException(sqlCon);
+                throw SqlException(sqlCon);
             }
         }
         delete params;
