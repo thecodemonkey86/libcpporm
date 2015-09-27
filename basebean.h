@@ -23,6 +23,9 @@ protected:
     virtual QList<QVariant>* getUpdateConditionParams()=0;
     virtual void setAutoIncrementId(int id);
     static Sql * sqlCon;
+    static void beginTransaction();
+    static void commitTransaction();
+    static void rollbackTransaction();
     bool autoIncrement, idModified;
 public:
     virtual QString getTableName()=0;

@@ -60,6 +60,22 @@ void BaseBean::setAutoIncrementId(int id)
 
 }
 
+void BaseBean::beginTransaction()
+{
+    sqlCon->beginTransaction();
+}
+
+void BaseBean::commitTransaction()
+{
+    sqlCon->commitTransaction();
+}
+
+void BaseBean::rollbackTransaction()
+{
+     sqlCon->rollbackTransaction();
+}
+
+
 
 
 void BaseBean::setConnection(Sql *sqlCon)

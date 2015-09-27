@@ -68,10 +68,9 @@ public:
         return T::fetchOne(res);
     }
 
-    QList<T*>* query() {
+    QList<T> query() {
         QSqlQuery * res= qu->execQuery();
-        QList<T*>* beans = T::fetchList(res);
-        return beans;
+        return T::fetchList(res);
     }
 };
 
