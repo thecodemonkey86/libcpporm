@@ -25,7 +25,7 @@ SOURCES += \
   #  model/beans/track.cpp \
   #  model/beans/gig.cpp
 HEADERS +=\
-        orm_global.h \
+    orm_global.h \
     basebean.h \
     beanquery.h
     #ormforeign.h \
@@ -36,17 +36,17 @@ HEADERS +=\
   #  model/beans/track.h \
   #  model/beans/gig.h
 
-unix:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_5_0_GCC_64bit/release/ -lSqlUtil2
-else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_5_0_GCC_64bit/debug/ -lSqlUtil2
+CONFIG(release, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_4_0_MinGW_32bit/release/ -lSqlUtil2
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_4_0_MinGW_32bit/debug/ -lSqlUtil2
 
 
-INCLUDEPATH += ../SqlUtil2
+INCLUDEPATH += $$PWD/../SqlUtil2
 
-unix:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_5_0_GCC_64bit/release/ -lQtCommon
-else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_5_0_GCC_64bit/debug/ -lQtCommon
+CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_4_0_MinGW_32bit/release/ -lQtCommon
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_4_0_MinGW_32bit/debug/ -lQtCommon
 
 
-INCLUDEPATH += ../QtCommon
+INCLUDEPATH += $$PWD/../QtCommon
 
 unix {
     target.path = /usr/lib
