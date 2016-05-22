@@ -29,15 +29,18 @@ public:
 //    }
 
     BeanQuery * select() {
-        return this->select(QString("b1"));
+        this->mainBeanAlias = QString("b1");
+        qu->select(T::getAllSelectFields(mainBeanAlias))
+        ->from(QString(T::TABLENAME),mainBeanAlias);
+        T::addRelatedTableJoins(this);
+       // qu = + QString(" FROM ") + ;
+        return this;
     }
 
     BeanQuery * select(const QString&mainBeanAlias ) {
         this->mainBeanAlias = mainBeanAlias;
         qu->select(T::getAllSelectFields(mainBeanAlias))
         ->from(QString(T::TABLENAME),mainBeanAlias);
-        T::addRelatedTableJoins(this);
-       // qu = + QString(" FROM ") + ;
         return this;
     }
 
@@ -55,6 +58,17 @@ public:
         qu->leftJoin(table,alias,on);
         return this;
     }
+
+    BeanQuery* leftJoin(const QString &  table,const QString &  alias,const QString &  on, const QVariant&param) {
+        qu->leftJoin(table,alias,on,param);
+        return this;
+    }
+
+    BeanQuery* leftJoin(const QString &  table,const QString &  alias,const QString &  on, const QList<QVariant>&params) {
+        qu->leftJoin(table,alias,on,params);
+        return this;
+    }
+
 
     BeanQuery* where(const QString &  whereCond) {
         qu->where(whereCond);
@@ -74,6 +88,14 @@ public:
     BeanQuery* andWhere(const QString &  whereCond) {
         qu->andWhere(whereCond);
         return this;
+    }
+
+    QString toString() {
+        return qu->toString();
+    }
+
+    void printDebug() {
+       qu->debug();
     }
 
 //    virtual std::shared_ptr<T> queryOne()=0;
@@ -101,9 +123,9 @@ public:
             return T::fetchList(std::move(res));
         }*/
 
-    void printDebug() {
-        qDebug()<<qu->toString();
-    }
+   // void printDebug() {
+      //  qDebug()<<qu->toString();
+   // }
 };
 
 #endif // BEANQUERY_H
