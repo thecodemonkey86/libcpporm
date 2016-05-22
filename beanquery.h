@@ -54,6 +54,16 @@ public:
         return this;
     }
 
+    BeanQuery* join(const QString &  table,const QString &  alias,const QString &  on, const QVariant&param) {
+        qu->join(table,alias,on,param);
+        return this;
+    }
+
+    BeanQuery* join(const QString &  tableAlias,const QString &  on, const QVariant&param) {
+        qu->join(tableAlias,on,param);
+        return this;
+    }
+
     BeanQuery* leftJoin(const QString &  table,const QString &  alias,const QString &  on) {
         qu->leftJoin(table,alias,on);
         return this;
@@ -66,6 +76,21 @@ public:
 
     BeanQuery* leftJoin(const QString &  table,const QString &  alias,const QString &  on, const QList<QVariant>&params) {
         qu->leftJoin(table,alias,on,params);
+        return this;
+    }
+
+    BeanQuery* leftJoin(const QString &  tableAlias,const QString &  on) {
+        qu->leftJoin(tableAlias,on);
+        return this;
+    }
+
+    BeanQuery* leftJoin(const QString &  tableAlias,const QString &  on, const QVariant&param) {
+        qu->leftJoin(tableAlias,on,param);
+        return this;
+    }
+
+    BeanQuery* leftJoin(const QString &  tableAlias,const QString &  on, const QList<QVariant>&params) {
+        qu->leftJoin(tableAlias,on,params);
         return this;
     }
 
