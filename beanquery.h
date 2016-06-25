@@ -28,91 +28,98 @@ public:
 //        return std::move(unique_ptr<T>(new BeanQuery<T>(sqlCon,std::move(qu))));
 //    }
 
-    BeanQuery * select() {
+    BeanQuery & select() {
         this->mainBeanAlias = QString("b1");
         qu->select(T::getAllSelectFields(mainBeanAlias))
-        ->from(QString(T::TABLENAME),mainBeanAlias);
-        T::addRelatedTableJoins(this);
+        ->from(T::getTableName(mainBeanAlias));
+        T::addRelatedTableJoins(*this);
        // qu = + QString(" FROM ") + ;
-        return this;
+        return *this;
     }
 
-    BeanQuery * select(const QString&mainBeanAlias ) {
+    BeanQuery & select(const QString&mainBeanAlias ) {
         this->mainBeanAlias = mainBeanAlias;
         qu->select(T::getAllSelectFields(mainBeanAlias))
-        ->from(QString(T::TABLENAME),mainBeanAlias);
-        return this;
+        .from(T::getTableName(mainBeanAlias));
+        return *this;
     }
 
-    BeanQuery* join(const QString &  table,const QString &  alias,const QString &  on) {
+    BeanQuery & select(const QString&mainBeanAlias, const QString &selectFields ) {
+        this->mainBeanAlias = mainBeanAlias;
+        qu->select(selectFields)
+        ->from(T::getTableName(mainBeanAlias));
+        return *this;
+    }
+
+    BeanQuery & join(const QString &  table,const QString &  alias,const QString &  on) {
         qu->join(table,alias,on);
-        return this;
+        return *this;
     }
 
-    BeanQuery* join(const QString &  tableAlias,const QString &  on) {
+    BeanQuery & join(const QString &  tableAlias,const QString &  on) {
         qu->join(tableAlias,on);
-        return this;
+        return *this;
     }
 
-    BeanQuery* join(const QString &  table,const QString &  alias,const QString &  on, const QVariant&param) {
+    BeanQuery & join(const QString &  table,const QString &  alias,const QString &  on, const QVariant&param) {
         qu->join(table,alias,on,param);
-        return this;
+        return *this;
     }
 
-    BeanQuery* join(const QString &  tableAlias,const QString &  on, const QVariant&param) {
+    BeanQuery & join(const QString &  tableAlias,const QString &  on, const QVariant&param) {
         qu->join(tableAlias,on,param);
-        return this;
+        return *this;
     }
 
-    BeanQuery* leftJoin(const QString &  table,const QString &  alias,const QString &  on) {
+    BeanQuery & leftJoin(const QString &  table,const QString &  alias,const QString &  on) {
         qu->leftJoin(table,alias,on);
-        return this;
+        return *this;
     }
 
-    BeanQuery* leftJoin(const QString &  table,const QString &  alias,const QString &  on, const QVariant&param) {
+    BeanQuery & leftJoin(const QString &  table,const QString &  alias,const QString &  on, const QVariant&param) {
         qu->leftJoin(table,alias,on,param);
-        return this;
+        return *this;
     }
 
-    BeanQuery* leftJoin(const QString &  table,const QString &  alias,const QString &  on, const QList<QVariant>&params) {
+    BeanQuery & leftJoin(const QString &  table,const QString &  alias,const QString &  on, const QList<QVariant>&params) {
         qu->leftJoin(table,alias,on,params);
-        return this;
+        return *this;
     }
 
-    BeanQuery* leftJoin(const QString &  tableAlias,const QString &  on) {
+    BeanQuery & leftJoin(const QString &  tableAlias,const QString &  on) {
         qu->leftJoin(tableAlias,on);
-        return this;
+        return *this;
     }
 
-    BeanQuery* leftJoin(const QString &  tableAlias,const QString &  on, const QVariant&param) {
+    BeanQuery & leftJoin(const QString &  tableAlias,const QString &  on, const QVariant&param) {
         qu->leftJoin(tableAlias,on,param);
-        return this;
+        return *this;
     }
 
-    BeanQuery* leftJoin(const QString &  tableAlias,const QString &  on, const QList<QVariant>&params) {
+    BeanQuery & leftJoin(const QString &  tableAlias,const QString &  on, const QList<QVariant>&params) {
         qu->leftJoin(tableAlias,on,params);
-        return this;
+        return *this;
     }
 
 
-    BeanQuery* where(const QString &  whereCond) {
+    BeanQuery & where(const QString &  whereCond) {
         qu->where(whereCond);
-        return this;
+        return *this;
     }
 
-    BeanQuery* where(const QString &  whereCond, const QVariant&param) {
+    BeanQuery & where(const QString &  whereCond, const QVariant&param) {
         qu->where(whereCond,param);
-        return this;
+        return *this;
     }
 
-    BeanQuery* andWhere(const QString &  whereCond, const QVariant&param) {
+    BeanQuery & andWhere(const QString &  whereCond, const QVariant&param) {
         qu->andWhere(whereCond,param);
-        return this;
+        return *this;
     }
 
-    BeanQuery* andWhere(const QString &  whereCond) {
+    BeanQuery & andWhere(const QString &  whereCond) {
         qu->andWhere(whereCond);
-        return this;
+        return *this;
     }
 
     QString toString() {
@@ -126,7 +133,7 @@ public:
 //    virtual std::shared_ptr<T> queryOne()=0;
     virtual  QVector<std::shared_ptr<T>> query() =0;
 
-    //BeanQuery* where(const QString &  whereCond, const QList<QVariant>& params);
+    //BeanQuery & where(const QString &  whereCond, const QList<QVariant>& params);
 
     /* std::shared_ptr<T> queryOne() {
         std::unique_ptr<QSqlQuery> res= qu->execQuery();

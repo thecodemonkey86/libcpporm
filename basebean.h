@@ -20,7 +20,7 @@ public:
 protected:
     bool insert;
     bool loaded;
-    static QString tableName;
+//    static QString tableName;
     virtual QString getInsertFields()=0;
     virtual QStringList getUpdateFields(QList<QVariant>* params)=0;
     virtual QString getInsertValuePlaceholders()=0;

@@ -18,12 +18,12 @@ void BaseBean::save()
     if (insert){
         if (!sqlInsert()) {
             if (!sqlUpdate()) {
-                throw SqlException(sqlCon);
+                throw SqlException(sqlCon->getErrorNr(), sqlCon->getCon().lastError().text());
             }
         }
     } else  {
         if (!sqlUpdate()) {
-            throw SqlException(sqlCon);
+            throw SqlException(sqlCon->getErrorNr(), sqlCon->getCon().lastError().text());
         }
     }
 }
