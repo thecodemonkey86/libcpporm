@@ -13,7 +13,7 @@ TEMPLATE = lib
 
 DEFINES += ORM_LIBRARY
 
-CONFIG += c++11
+CONFIG += c++14
 
 SOURCES += \
     basebean.cpp
@@ -36,14 +36,14 @@ HEADERS +=\
   #  model/beans/track.h \
   #  model/beans/gig.h
 
-CONFIG(release, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_4_0_MinGW_32bit/release/ -lSqlUtil2
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_4_0_MinGW_32bit/debug/ -lSqlUtil2
+CONFIG(release, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_7_0_GCC_64bit/release/ -lSqlUtil2
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_7_0_GCC_64bit/debug/ -lSqlUtil2
 
 
 INCLUDEPATH += $$PWD/../SqlUtil2
 
-CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_4_0_MinGW_32bit/release/ -lQtCommon
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_4_0_MinGW_32bit/debug/ -lQtCommon
+CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_7_0_GCC_64bit/release/ -lQtCommon
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_7_0_GCC_64bit/debug/ -lQtCommon
 
 
 INCLUDEPATH += $$PWD/../QtCommon

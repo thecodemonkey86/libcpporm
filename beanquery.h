@@ -107,6 +107,11 @@ public:
         return *this;
     }
 
+    BeanQuery & where(const QString &  whereCond, const QString&param) {
+        qu->where(whereCond,param);
+        return *this;
+    }
+
     BeanQuery & where(const QString &  whereCond, const QVariant&param) {
         qu->where(whereCond,param);
         return *this;
