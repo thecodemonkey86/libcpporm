@@ -8,15 +8,7 @@
 #else
 #  define ORMSHARED_EXPORT Q_DECL_IMPORT
 #endif
+#include "beanquery.h"
+
 
 #endif // ORM_GLOBAL_H
-
-/*#include "beanquery.h"
-#include "ormforeign.h"
-
-void test() {
-    BeanQuery<OrmForeign>* q=new BeanQuery<OrmForeign>();
-    q->select()->
-q->query();
-}
-*/

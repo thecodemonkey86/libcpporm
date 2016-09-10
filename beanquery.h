@@ -1,24 +1,31 @@
 #ifndef BEANQUERY_H
 #define BEANQUERY_H
+
+class SqlQuery;
+
 #include <QVector>
 #include "sqlquery.h"
 #include <memory>
 #include <QDebug>
+#include "orm_global.h"
 
 using namespace std;
 
-template<class T>
+template<typename T>
 class BeanQuery
 {
 protected:
     QString mainBeanAlias;
-    unique_ptr<SqlQuery> qu;
+    shared_ptr<SqlQuery> qu;
     Sql* sqlCon;
 public:
     BeanQuery(Sql* sqlCon) {
-        this->qu = move(sqlCon->buildQuery());
+        this->qu = sqlCon->buildQuery();
         this->sqlCon = sqlCon;
     }
+
+//public: BeanQuery(const BeanQuery&&other) {
+//    }
 
    virtual ~BeanQuery() {
 
@@ -40,7 +47,7 @@ public:
     BeanQuery & select(const QString&mainBeanAlias ) {
         this->mainBeanAlias = mainBeanAlias;
         qu->select(T::getAllSelectFields(mainBeanAlias))
-        .from(T::getTableName(mainBeanAlias));
+        ->from(T::getTableName(mainBeanAlias));
         return *this;
     }
 
