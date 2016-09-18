@@ -8,10 +8,11 @@ class SqlQuery;
 #include <memory>
 #include <QDebug>
 #include "orm_global.h"
+#include <QSqlResult>
 
 using namespace std;
 
-template<typename T>
+template<class T>
 class BeanQuery
 {
 protected:
@@ -134,12 +135,26 @@ public:
         return *this;
     }
 
+    BeanQuery & orderBy(const QString & order, const SqlQuery::OrderDirection direction){
+        qu->orderBy(order, direction);
+         return *this;
+    }
+
+    BeanQuery & orderBy(const QString & orderByExpression){
+        qu->orderBy(orderByExpression);
+         return *this;
+    }
+
     QString toString() {
         return qu->toString();
     }
 
     void printDebug() {
        qu->debug();
+    }
+
+    unique_ptr<QSqlQuery>  execQuery() {
+        return std::move(qu->execQuery());
     }
 
 //    virtual std::shared_ptr<T> queryOne()=0;
