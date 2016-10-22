@@ -153,13 +153,21 @@ public:
        qu->debug();
     }
 
+    BeanQuery & deleteFrom(){
+        qu->deleteFrom(T::getTableName());
+          return *this;
+    }
+
+    bool execute() {
+        return qu->execute();
+    }
+
     unique_ptr<QSqlQuery>  execQuery() {
         return std::move(qu->execQuery());
     }
 
-//    virtual std::shared_ptr<T> queryOne()=0;
     virtual  QVector<std::shared_ptr<T>> query() =0;
-
+    virtual std::shared_ptr<T> queryOne()=0;
     //BeanQuery & where(const QString &  whereCond, const QList<QVariant>& params);
 
     /* std::shared_ptr<T> queryOne() {

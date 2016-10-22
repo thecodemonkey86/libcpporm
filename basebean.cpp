@@ -28,6 +28,17 @@ void BaseBean::save()
     }
 }
 
+void BaseBean::remove()
+{
+     QVariantList conditionParams=  getUpdateConditionParams();
+     QString query("DELETE FROM %1 WHERE %2");
+     if (!sqlCon->execute(query.arg(getTableNameInternal(), getUpdateCondition()),conditionParams)) {
+         throw SqlException(sqlCon->getErrorNr(), sqlCon->getCon().lastError().text());
+     }
+}
+
+
+
 void BaseBean::setAutoIncrementId(int id)
 {
 
@@ -86,8 +97,9 @@ bool BaseBean::sqlInsert()
            return true;
        }
    } else {
-       if (!sqlCon->execute(query,params)) {
-           qDebug()<<sqlCon->printDebug(query,params);
+      qDebug()<< sqlCon->printDebug(query.arg( getTableNameInternal(),getInsertFields(),getInsertValuePlaceholders()),params);
+       if (!sqlCon->execute(query.arg( getTableNameInternal(),getInsertFields(),getInsertValuePlaceholders()),params)) {
+
            return false;
        } else {
            insert = false;

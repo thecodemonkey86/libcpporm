@@ -14,6 +14,7 @@ public:
     BaseBean(Sql * sqlCon);
     virtual ~BaseBean();
     virtual void save();
+    virtual void remove();
     void beginTransaction();
     void commitTransaction();
     void rollbackTransaction();
