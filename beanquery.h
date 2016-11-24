@@ -115,6 +115,35 @@ public:
         return *this;
     }
 
+    BeanQuery & where(const QString &  whereCond,int param1) {
+        qu->where(whereCond, QVariant(param1));
+        return *this;
+    }
+
+    BeanQuery & where(const QString &  whereCond,int param1, int param2) {
+        QVariantList params;
+        params.reserve(2);
+        params.append(QVariant(param1));
+        params.append(QVariant(param2));
+        qu->where(whereCond, params);
+        return *this;
+    }
+
+    BeanQuery & where(const QString &  whereCond,int param1, int param2, int param3) {
+        QVariantList params;
+        params.reserve(3);
+        params.append(QVariant(param1));
+        params.append(QVariant(param2));
+        params.append(QVariant(param3));
+        qu->where(whereCond, params);
+        return *this;
+    }
+
+    BeanQuery & where(const QString &  whereCond,const QList<QVariant>&params) {
+        qu->where(whereCond,params);
+        return *this;
+    }
+
     BeanQuery & where(const QString &  whereCond, const QString&param) {
         qu->where(whereCond,param);
         return *this;
