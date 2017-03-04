@@ -13,7 +13,7 @@ class ORMSHARED_EXPORT BaseBean
 public:
     BaseBean(Sql * sqlCon);
     virtual ~BaseBean();
-    virtual void save();
+    virtual void save(bool cascadeSaveRelations = false );
     virtual void remove();
     void beginTransaction();
     void commitTransaction();

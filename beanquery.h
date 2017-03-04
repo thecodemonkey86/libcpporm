@@ -9,6 +9,7 @@ class SqlQuery;
 #include <QDebug>
 #include "orm_global.h"
 #include <QSqlResult>
+#include <QSqlDriver>
 
 using namespace std;
 
@@ -17,12 +18,29 @@ class BeanQuery
 {
 protected:
     QString mainBeanAlias;
-    shared_ptr<SqlQuery> qu;
-    Sql* sqlCon;
+    QString selectFields;
+    QString fromTable;
+    QString orderByExpression;
+    QList<QString > joinTables;
+    QList<QString> conditions;
+    QList<QString> group;
+    int64_t limitResults, resultOffset;
+    QString limitOffsetCondition;
+    QString limitOffsetOrderBy;
+    QString deleteFromTable;
+    QList<QVariant> params;
+    Sql*sqlCon;
+
+    static const QString IN;
+    static const QString AND;
+    static const QString OR;
+    static const QChar LP;
+    static const QChar RP;
 public:
     BeanQuery(Sql* sqlCon) {
-        this->qu = sqlCon->buildQuery();
         this->sqlCon = sqlCon;
+        this->limitResults = 0;
+        this->resultOffset = -1;
     }
 
 //public: BeanQuery(const BeanQuery&&other) {
@@ -37,9 +55,9 @@ public:
 //    }
 
     BeanQuery & select() {
-        this->mainBeanAlias = QString("b1");
-        qu->select(T::getAllSelectFields(mainBeanAlias))
-        ->from(T::getTableName(mainBeanAlias));
+        this->mainBeanAlias = QStringLiteral("b1");
+        this->selectFields = T::getAllSelectFields(mainBeanAlias);
+        this->fromTable = T::getTableName(mainBeanAlias);
         T::addRelatedTableJoins(*this);
        // qu = + QString(" FROM ") + ;
         return *this;
@@ -47,156 +65,290 @@ public:
 
     BeanQuery & select(const QString&mainBeanAlias ) {
         this->mainBeanAlias = mainBeanAlias;
-        qu->select(T::getAllSelectFields(mainBeanAlias))
-        ->from(T::getTableName(mainBeanAlias));
+        this->selectFields = T::getAllSelectFields(mainBeanAlias);
+        this->fromTable = T::getTableName(mainBeanAlias);
         return *this;
     }
 
     BeanQuery & select(const QString&mainBeanAlias, const QString &selectFields ) {
         this->mainBeanAlias = mainBeanAlias;
-        qu->select(selectFields)
-        ->from(T::getTableName(mainBeanAlias));
+        this->selectFields = selectFields;
+        this->fromTable = T::getTableName(mainBeanAlias);
         return *this;
     }
 
-    BeanQuery & join(const QString &  table,const QString &  alias,const QString &  on) {
-        qu->join(table,alias,on);
+
+    BeanQuery & join(const QString &joinTable, const QString &alias, const QString & on)
+    {
+        this->joinTables.append(QStringLiteral(" JOIN %1 %2 ON %3").arg( joinTable, alias, on));
         return *this;
     }
 
-    BeanQuery & join(const QString &  tableAlias,const QString &  on) {
-        qu->join(tableAlias,on);
+    BeanQuery & join(const QString &joinTableAlias, const QString &on)
+    {
+        this->joinTables.append(QStringLiteral(" JOIN %1 ON %2").arg( joinTableAlias,on));
         return *this;
     }
 
-    BeanQuery & join(const QString &  table,const QString &  alias,const QString &  on, const QVariant&param) {
-        qu->join(table,alias,on,param);
+    BeanQuery & join(const QString &joinTable, const QString &alias, const QString &on, const QVariant &param)
+    {
+        this->params.append(param);
+        return join(joinTable,alias,on);
+    }
+
+    BeanQuery & join(const QString &joinTableAlias, const QString &on, const QVariant &param)
+    {
+        this->params.append(param);
+        return join(joinTableAlias,on);
+    }
+
+    BeanQuery & leftJoin(const QString &joinTable, const QString &alias, const QString & on)
+    {
+        this->joinTables.append(QStringLiteral(" LEFT JOIN %1 %2 ON %3").arg(joinTable, alias,on));
         return *this;
     }
 
-    BeanQuery & join(const QString &  tableAlias,const QString &  on, const QVariant&param) {
-        qu->join(tableAlias,on,param);
+    BeanQuery & leftJoin(const QString &joinTable, const QString &alias, const QString &on, const QVariant &param)
+    {
+        this->params.append(param);
+        return leftJoin(joinTable,alias,on);
+    }
+
+    BeanQuery & leftJoin(const QString &joinTable, const QString &alias, const QString &on, const QList<QVariant> &params)
+    {
+        this->params.append(params);
+        return leftJoin(joinTable,alias,on);
+    }
+
+    BeanQuery & leftJoin(const QString &joinTableAlias, const QString &on)
+    {
+        this->joinTables.append(QStringLiteral(" LEFT JOIN %1 ON %2").arg(joinTableAlias,on));
         return *this;
     }
 
-    BeanQuery & leftJoin(const QString &  table,const QString &  alias,const QString &  on) {
-        qu->leftJoin(table,alias,on);
-        return *this;
+    BeanQuery & leftJoin(const QString &joinTableAlias, const QString &on, const QVariant &param)
+    {
+        this->params.append(param);
+        return leftJoin(joinTableAlias,on);
     }
 
-    BeanQuery & leftJoin(const QString &  table,const QString &  alias,const QString &  on, const QVariant&param) {
-        qu->leftJoin(table,alias,on,param);
-        return *this;
+    BeanQuery & leftJoin(const QString &joinTableAlias, const QString &on, const QList<QVariant> &params)
+    {
+        this->params.append(params);
+        return leftJoin(joinTableAlias,on);
     }
-
-    BeanQuery & leftJoin(const QString &  table,const QString &  alias,const QString &  on, const QList<QVariant>&params) {
-        qu->leftJoin(table,alias,on,params);
-        return *this;
-    }
-
-    BeanQuery & leftJoin(const QString &  tableAlias,const QString &  on) {
-        qu->leftJoin(tableAlias,on);
-        return *this;
-    }
-
-    BeanQuery & leftJoin(const QString &  tableAlias,const QString &  on, const QVariant&param) {
-        qu->leftJoin(tableAlias,on,param);
-        return *this;
-    }
-
-    BeanQuery & leftJoin(const QString &  tableAlias,const QString &  on, const QList<QVariant>&params) {
-        qu->leftJoin(tableAlias,on,params);
-        return *this;
-    }
-
 
     BeanQuery & where(const QString &  whereCond) {
-        qu->where(whereCond);
+        if (!conditions.empty()) {
+            this->conditions.append(SqlQuery::AND);
+        }
+        this->conditions.append(whereCond);
         return *this;
     }
 
-    BeanQuery & where(const QString &  whereCond,int param1) {
-        qu->where(whereCond, QVariant(param1));
+    BeanQuery & where(const QString &  whereCond,int param) {
+        if (!conditions.empty()) {
+            this->conditions.append(SqlQuery::AND);
+        }
+        this->conditions.append(whereCond);
+        this->params.append(param);
         return *this;
     }
 
     BeanQuery & where(const QString &  whereCond,int param1, int param2) {
-        QVariantList params;
-        params.reserve(2);
-        params.append(QVariant(param1));
-        params.append(QVariant(param2));
-        qu->where(whereCond, params);
+        if (!conditions.empty()) {
+            this->conditions.append(SqlQuery::AND);
+        }
+        this->params.append(QVariant(param1));
+        this->params.append(QVariant(param2));
+        this->conditions.append(whereCond);
         return *this;
     }
 
     BeanQuery & where(const QString &  whereCond,int param1, int param2, int param3) {
-        QVariantList params;
-        params.reserve(3);
-        params.append(QVariant(param1));
-        params.append(QVariant(param2));
-        params.append(QVariant(param3));
-        qu->where(whereCond, params);
+        if (!conditions.empty()) {
+            this->conditions.append(SqlQuery::AND);
+        }
+        this->params.append(QVariant(param1));
+        this->params.append(QVariant(param2));
+        this->params.append(QVariant(param3));
+        this->conditions.append(whereCond);
         return *this;
     }
 
     BeanQuery & where(const QString &  whereCond,const QList<QVariant>&params) {
-        qu->where(whereCond,params);
+        this->params.append(params);
+        if (!conditions.empty()) {
+            this->conditions.append(SqlQuery::AND);
+        }
+        this->conditions.append(whereCond);
         return *this;
     }
 
     BeanQuery & where(const QString &  whereCond, const QString&param) {
-        qu->where(whereCond,param);
+        if (!conditions.empty()) {
+            this->conditions.append(SqlQuery::AND);
+        }
+        this->conditions.append(whereCond);
+        this->params.append(param);
         return *this;
     }
 
     BeanQuery & where(const QString &  whereCond, const QVariant&param) {
-        qu->where(whereCond,param);
+        if (!conditions.empty()) {
+            this->conditions.append(SqlQuery::AND);
+        }
+        this->conditions.append(whereCond);
+        this->params.append(param);
         return *this;
     }
 
     BeanQuery & andWhere(const QString &  whereCond, const QVariant&param) {
-        qu->andWhere(whereCond,param);
+        this->conditions.append(SqlQuery::AND);
+        this->conditions.append(whereCond);
+        this->params.append(param);
         return *this;
     }
 
     BeanQuery & andWhere(const QString &  whereCond) {
-        qu->andWhere(whereCond);
+        this->conditions.append(SqlQuery::AND);
+        this->conditions.append(whereCond);
         return *this;
     }
 
-    BeanQuery & orderBy(const QString & order, const SqlQuery::OrderDirection direction){
-        qu->orderBy(order, direction);
-         return *this;
+    BeanQuery & orderBy(const QString & order, const SqlQuery::OrderDirection direction = SqlQuery::ORDER_ASC){
+        this->orderByExpression = QStringLiteral("%1 %2 ").arg(order, (direction == SqlQuery::ORDER_ASC ? QStringLiteral("asc") : QStringLiteral("desc")) );
+        return *this;
     }
 
-    BeanQuery & orderBy(const QString & orderByExpression){
-        qu->orderBy(orderByExpression);
-         return *this;
-    }
+
 
     QString toString() {
-        return qu->toString();
+        QString query;
+        if (!selectFields.isEmpty()) {
+            query += QStringLiteral("SELECT %1 FROM %2").arg(selectFields, fromTable);
+        } else if (!deleteFromTable.isEmpty()) {
+             query+= QStringLiteral("DELETE FROM %1").arg(deleteFromTable);
+        }
+
+        for(int i=0;i<joinTables.size();i++) {
+            query+=joinTables.at(i);
+        }
+
+        if (!conditions.empty()) {
+
+            if (limitResults > 0 || resultOffset > -1) {
+                query += QStringLiteral(" WHERE (");
+            } else {
+                query += QStringLiteral(" WHERE ");
+            }
+
+            for(const QString &cond: conditions) {
+                query += cond;
+            }
+        }
+
+        if (group.size()>0) {
+            query += QStringLiteral(" GROUP BY %1").arg(group.at(0));
+            for(int i=1;i<group.size();i++) {
+                query += QStringLiteral(", %1").arg(group.at(i));
+            }
+        }
+        if (limitResults > 0 || resultOffset > -1) {
+            if (!conditions.empty()) {
+                query += QStringLiteral(") AND %1").arg(T::getLimitQueryString(limitResults,resultOffset,limitOffsetCondition));
+            } else {
+                query += QStringLiteral(" WHERE %1").arg(T::getLimitQueryString(limitResults,resultOffset,limitOffsetCondition));
+            }
+            if (!limitOffsetOrderBy.isEmpty()) {
+                query += QStringLiteral(" ORDER BY %1").arg(limitOffsetOrderBy);
+            }
+        }
+        return query;
+    }
+
+    QString getDebugString() {
+        QString result(toString());
+       for(int i=0;i<params.size();i++) {
+    //       qDebug()<<params.at(i).typeName();
+           QString v= QString(params.at(i).typeName())!= QString( "QByteArray") ? params.at(i).toString() :QString(params.at(i).toByteArray().toHex());
+           QRegExp e("^[0-9][0-9]*$");
+            result.replace(result.indexOf(QChar('?')),1,
+                          v.isNull()?QString("NULL"): e.exactMatch(v)?v:QString("'")+ v+ QString("'"));
+       }
+       return result;
+    }
+
+    void printQDebug() {
+        qDebug() << getDebugString();
     }
 
     void printDebug() {
-       qu->debug();
+
+       std::cout<<getDebugString().toUtf8().data();
     }
 
     BeanQuery & deleteFrom(){
-        qu->deleteFrom(T::getTableName());
-          return *this;
+        this->deleteFromTable = T::getTableName();
+        return *this;
     }
 
     bool execute() {
-        return qu->execute();
+         return *this->sqlCon->execute(toString(),params);
     }
 
     unique_ptr<QSqlQuery>  execQuery() {
-        return std::move(qu->execQuery());
+        std::unique_ptr<QSqlQuery> q(new QSqlQuery(sqlCon->getCon()));
+        q->setForwardOnly(true);
+        if (q->prepare(toString())) {
+
+
+            for(int i=0;i<params.size();i++) {
+                q->addBindValue(params.at(i));
+
+            }
+            if (!q->exec()) {
+                QString msg=q->lastError().text();
+                qDebug()<<msg;
+                qDebug()<<q->driver()->lastError().text();
+                throw SqlException(sqlCon->getErrorNr(),q->driver()->lastError().text(), toString());
+            }
+            return q;
+
+        } else {
+            QString msg=q->lastError().text();
+            qDebug()<<msg;
+            throw SqlException(sqlCon->getErrorNr(), q->driver()->lastError().text(),toString());
+        }
     }
 
     virtual  QVector<std::shared_ptr<T>> query() =0;
     virtual std::shared_ptr<T> queryOne()=0;
+
+    BeanQuery & limit(int64_t limit, const  QString & condition, const  QString & orderBy = QString()) {
+        this->limitResults = limit;
+        this->resultOffset = -1;
+        this->limitOffsetCondition = condition;
+        this->limitOffsetOrderBy = orderBy;
+        return *this;
+    }
+
+    BeanQuery & limitAndOffset(int64_t limit,int64_t offset, const  QString & condition, const  QString & orderBy = QString()) {
+        this->limitResults = limit;
+        this->resultOffset = offset;
+        this->limitOffsetCondition = condition;
+        this->limitOffsetOrderBy = orderBy;
+        return *this;
+    }
+
+    BeanQuery & offset(int64_t offset, const  QString & condition, const  QString & orderBy = QString()) {
+        this->limitResults = -1;
+        this->resultOffset = offset;
+        this->limitOffsetCondition = condition;
+        this->limitOffsetOrderBy = orderBy;
+        return *this;
+    }
+
     //BeanQuery & where(const QString &  whereCond, const QList<QVariant>& params);
 
     /* std::shared_ptr<T> queryOne() {
@@ -223,5 +375,7 @@ public:
       //  qDebug()<<qu->toString();
    // }
 };
+
+
 
 #endif // BEANQUERY_H

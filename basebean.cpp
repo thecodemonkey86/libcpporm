@@ -13,7 +13,9 @@ BaseBean::~BaseBean()
 
 }
 
-void BaseBean::save()
+
+
+void BaseBean::save(bool cascadeSaveRelations)
 {
     if (insert){
         if (!sqlInsert()) {
