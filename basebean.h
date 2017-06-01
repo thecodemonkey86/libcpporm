@@ -10,38 +10,28 @@ using namespace std;
 
 class ORMSHARED_EXPORT BaseBean
 {
-public:
-    BaseBean(Sql * sqlCon);
-    virtual ~BaseBean();
-    virtual void save(bool cascadeSaveRelations = false );
-    virtual void remove();
-    void beginTransaction();
-    void commitTransaction();
-    void rollbackTransaction();
 protected:
     bool insert;
     bool loaded;
-//    static QString tableName;
-    virtual QString getInsertFields()=0;
-    virtual QStringList getUpdateFields(QList<QVariant>* params)=0;
-    virtual QString getInsertValuePlaceholders()=0;
-    virtual QString getUpdateCondition()=0;
-    virtual QList<QVariant> getInsertParams()=0;
-    virtual QList<QVariant> getUpdateConditionParams()=0;
-    virtual void setAutoIncrementId(int id);
-    Sql * sqlCon;
-    virtual QString getTableNameInternal()=0;
-    bool autoIncrement, idModified;
+    bool autoIncrement, primaryKeyModified;
+
 public:
+    BaseBean();
+    BaseBean(bool insertNew);
 
-    void setConnection(Sql* sqlCon);
-    void setInsertNew();
-    bool isLoaded() const;
+public:
+    virtual void setAutoIncrementId(int id);
+
+    bool isLoaded();
+
     void setLoaded(bool value);
-
-private:
-    inline bool sqlInsert();
-    inline bool sqlUpdate();
+    bool isInsertNew() const;
+    void setInsertNew();
+    void setInsertNew(bool value);
+    bool isAutoIncrement() const;
+    void setAutoIncrement(bool value);
+    bool isPrimaryKeyModified() const;
+    void setPrimaryKeyModified(bool value);
 };
 
 #endif // BASEBEAN_H
