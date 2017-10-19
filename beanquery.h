@@ -31,11 +31,7 @@ protected:
     QList<QVariant> params;
     Sql*sqlCon;
 
-    static const QString IN;
-    static const QString AND;
-    static const QString OR;
-    static const QChar LP;
-    static const QChar RP;
+
 public:
     BeanQuery(Sql* sqlCon) {
         this->sqlCon = sqlCon;
@@ -297,28 +293,28 @@ public:
          return *this->sqlCon->execute(toString(),params);
     }
 
-    unique_ptr<QSqlQuery>  execQuery() {
-        std::unique_ptr<QSqlQuery> q(new QSqlQuery(sqlCon->getCon()));
-        q->setForwardOnly(true);
-        if (q->prepare(toString())) {
+    QSqlQuery  execQuery() {
+        QSqlQuery q(sqlCon->getCon());
+        q.setForwardOnly(true);
+        if (q.prepare(toString())) {
 
 
             for(int i=0;i<params.size();i++) {
-                q->addBindValue(params.at(i));
+                q.addBindValue(params.at(i));
 
             }
-            if (!q->exec()) {
-                QString msg=q->lastError().text();
+            if (!q.exec()) {
+                QString msg=q.lastError().text();
                 qDebug()<<msg;
-                qDebug()<<q->driver()->lastError().text();
-                throw SqlException(sqlCon->getErrorNr(),q->driver()->lastError().text(), toString());
+                qDebug()<<q.driver()->lastError().text();
+                throw SqlException(sqlCon->getErrorNr(),q.driver()->lastError().text(), toString());
             }
             return q;
 
         } else {
-            QString msg=q->lastError().text();
+            QString msg=q.lastError().text();
             qDebug()<<msg;
-            throw SqlException(sqlCon->getErrorNr(), q->driver()->lastError().text(),toString());
+            throw SqlException(sqlCon->getErrorNr(), q.driver()->lastError().text(),toString());
         }
     }
 
