@@ -307,14 +307,14 @@ public:
                 QString msg=q.lastError().text();
                 qDebug()<<msg;
                 qDebug()<<q.driver()->lastError().text();
-                throw SqlException(sqlCon->getErrorNr(), QStringLiteral("exec: ") + (!sqlCon->error().isEmpty() ? sqlCon->error() : q.driver()->lastError().text()), toString());
+                throw SqlException(sqlCon->getErrorNr(),q.driver()->lastError().text(), toString());
             }
             return q;
 
         } else {
             QString msg=q.lastError().text();
             qDebug()<<msg;
-            throw SqlException(sqlCon->getErrorNr(),QStringLiteral("prepare: ") + (!sqlCon->error().isEmpty() ? sqlCon->error() : q.driver()->lastError().text()),toString());
+            throw SqlException(sqlCon->getErrorNr(), q.driver()->lastError().text(),toString());
         }
     }
 

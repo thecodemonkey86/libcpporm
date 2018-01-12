@@ -22,18 +22,13 @@ protected :
             if (bean->isAutoIncrement()) {
 
                 int id=sqlCon->insert(query,params);
-                if (id==-1) {
-                    throw new SqlException(sqlCon->getErrorNr(),sqlCon->getCon().lastError().text());
-                } else {
-                    bean->setAutoIncrementId(id);
-                    bean->setInsertNew(false);
-                }
+
+                bean->setAutoIncrementId(id);
+                bean->setInsertNew(false);
+
             } else {
-                if (!sqlCon->execute(query,params)) {
-                    throw new SqlException(sqlCon->getErrorNr(),sqlCon->getCon().lastError().text());
-                } else {
-                    bean->setInsertNew(false);
-                }
+               sqlCon->execute(query,params);
+                bean->setInsertNew(false);
             }
         } else  {
             QList<QVariant> params;
@@ -44,9 +39,7 @@ protected :
                 QString query = QStringLiteral("UPDATE %1 SET %2 WHERE %3").arg(bean->getTableName(),updateFields,bean->getUpdateCondition());
                  QList<QVariant> conditionParams=  bean->getUpdateConditionParams();
                 params.append(conditionParams);
-                if (!sqlCon->execute(query,params)) {
-                    throw new SqlException(sqlCon->getErrorNr(),sqlCon->getCon().lastError().text());
-                }
+                sqlCon->execute(query,params);
             }
         }
     }

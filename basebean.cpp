@@ -52,6 +52,11 @@ BaseBean::BaseBean(bool insertNew)
     this->primaryKeyModified = false;
 }
 
+BaseBean::~BaseBean()
+{
+
+}
+
 void BaseBean::setAutoIncrementId(int id)
 {
 

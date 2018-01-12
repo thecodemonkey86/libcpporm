@@ -39,33 +39,19 @@ HEADERS +=\
   #  model/beans/gig.h
 
 win32 {
-CONFIG(release, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_9_0_MinGW_32bit/release/ -lSqlUtil2
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_9_0_MinGW_32bit/debug/ -lSqlUtil2
+CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_5_9_1_MinGW_32bit/release/ -lSqlUtil2
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_5_9_1_MinGW_32bit/debug/ -lSqlUtil2
+
+CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_5_9_1_MinGW_32bit/release/ -lQtCommon2
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_5_9_1_MinGW_32bit/debug/ -lQtCommon2
+}
+
 
 
 INCLUDEPATH += $$PWD/../SqlUtil2
 
-CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_9_0_MinGW_32bit/release/ -lQtCommon
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_9_0_MinGW_32bit/debug/ -lQtCommon
 
-
-INCLUDEPATH += $$PWD/../QtCommon
-}
-
-unix {
-CONFIG(release, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_7_0_GCC_64bit/release/ -lSqlUtil2
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-SqlUtil2-Desktop_Qt_5_7_0_GCC_64bit/debug/ -lSqlUtil2
-
-
-INCLUDEPATH += $$PWD/../SqlUtil2
-
-CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_7_0_GCC_64bit/release/ -lQtCommon
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtCommon-Desktop_Qt_5_7_0_GCC_64bit/debug/ -lQtCommon
-
-
-INCLUDEPATH += $$PWD/../QtCommon
-
-}
+INCLUDEPATH += $$PWD/../QtCommon2
 
 unix {
     target.path = /usr/lib

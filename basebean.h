@@ -18,7 +18,7 @@ protected:
 public:
     BaseBean();
     BaseBean(bool insertNew);
-
+    virtual ~BaseBean();
 public:
     virtual void setAutoIncrementId(int id);
 
