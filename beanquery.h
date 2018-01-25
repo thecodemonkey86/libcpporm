@@ -20,10 +20,10 @@ protected:
     QString mainBeanAlias;
     QString selectFields;
     QString fromTable;
-    QString orderByExpression;
-    QList<QString > joinTables;
-    QList<QString> conditions;
-    QList<QString> group;
+    QStringList orderByExpressions;
+    QStringList joinTables;
+    QStringList conditions;
+    QStringList group;
     int64_t limitResults, resultOffset;
     QString limitOffsetCondition;
     QString limitOffsetOrderBy;
@@ -45,6 +45,8 @@ public:
    virtual ~BeanQuery() {
 
     }
+
+
 
 //    static BeanQuery<T> createQuery(Sql* sqlCon, unique_ptr<SqlQuery> qu) {
 //        return std::move(unique_ptr<T>(new BeanQuery<T>(sqlCon,std::move(qu))));
@@ -95,6 +97,18 @@ public:
     BeanQuery & join(const QString &joinTableAlias, const QString &on, const QVariant &param)
     {
         this->params.append(param);
+        return join(joinTableAlias,on);
+    }
+
+    BeanQuery & join(const QString &joinTable, const QString &alias, const QString &on, const QList<QVariant> &params)
+    {
+        this->params.append(params);
+        return join(joinTable,alias,on);
+    }
+
+    BeanQuery & join(const QString &joinTableAlias, const QString &on, const QList<QVariant> &params)
+    {
+        this->params.append(params);
         return join(joinTableAlias,on);
     }
 
@@ -213,7 +227,7 @@ public:
     }
 
     BeanQuery & orderBy(const QString & order, const SqlQuery::OrderDirection direction = SqlQuery::ORDER_ASC){
-        this->orderByExpression = QStringLiteral("%1 %2 ").arg(order, (direction == SqlQuery::ORDER_ASC ? QStringLiteral("asc") : QStringLiteral("desc")) );
+        this->orderByExpressions.append(QStringLiteral("%1 %2 ").arg(order, (direction == SqlQuery::ORDER_ASC ? QStringLiteral("asc") : QStringLiteral("desc")) ));
         return *this;
     }
 
@@ -260,6 +274,13 @@ public:
                 query += QStringLiteral(" ORDER BY %1").arg(limitOffsetOrderBy);
             }
         }
+
+        query += QStringLiteral(" ORDER BY ");
+        for(auto order : this->orderByExpressions) {
+            query += QStringLiteral("%1,").arg(order);
+        }
+        query += this->orderByPrimaryKey();
+
         return query;
     }
 
@@ -344,6 +365,9 @@ public:
         this->limitOffsetOrderBy = orderBy;
         return *this;
     }
+
+protected:
+    virtual QString orderByPrimaryKey() const = 0;
 
     //BeanQuery & where(const QString &  whereCond, const QList<QVariant>& params);
 
