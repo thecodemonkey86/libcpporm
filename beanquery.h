@@ -195,6 +195,13 @@ public:
         return *this;
     }
 
+    BeanQuery & andWhere(const QString &  whereCond,const QList<QVariant>&params) {
+        this->params.append(params);
+        this->conditions.append(SqlQuery::AND);
+        this->conditions.append(whereCond);
+        return *this;
+    }
+
     BeanQuery & where(const QString &  whereCond, const QString&param) {
         if (!conditions.empty()) {
             this->conditions.append(SqlQuery::AND);
@@ -274,13 +281,13 @@ public:
                 query += QStringLiteral(" ORDER BY %1").arg(limitOffsetOrderBy);
             }
         }
-
-        query += QStringLiteral(" ORDER BY ");
-        for(auto order : this->orderByExpressions) {
-            query += QStringLiteral("%1,").arg(order);
+        if (!selectFields.isEmpty()) {
+            query += QStringLiteral(" ORDER BY ");
+            for(auto order : this->orderByExpressions) {
+                query += QStringLiteral("%1,").arg(order);
+            }
+            query += this->orderByPrimaryKey();
         }
-        query += this->orderByPrimaryKey();
-
         return query;
     }
 
@@ -310,8 +317,8 @@ public:
         return *this;
     }
 
-    bool execute() {
-         return *this->sqlCon->execute(toString(),params);
+    void execute() {
+         this->sqlCon->execute(toString(),params);
     }
 
     QSqlQuery  execQuery() {
