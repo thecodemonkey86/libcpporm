@@ -240,7 +240,7 @@ public:
 
 
 
-    QString toString() {
+    QString toString() const{
         QString query;
         if (!selectFields.isEmpty()) {
             query += QStringLiteral("SELECT %1 FROM %2").arg(selectFields, fromTable);
@@ -291,7 +291,7 @@ public:
         return query;
     }
 
-    QString getDebugString() {
+    QString getDebugString() const {
         QString result(toString());
        for(int i=0;i<params.size();i++) {
     //       qDebug()<<params.at(i).typeName();
@@ -303,11 +303,11 @@ public:
        return result;
     }
 
-    void printQDebug() {
+    void printQDebug() const {
         qDebug() << getDebugString();
     }
 
-    void printDebug() {
+    void printDebug() const {
 
        std::cout<<getDebugString().toUtf8().data();
     }
@@ -317,11 +317,11 @@ public:
         return *this;
     }
 
-    void execute() {
+    void execute() const {
          this->sqlCon->execute(toString(),params);
     }
 
-    QSqlQuery  execQuery() {
+    QSqlQuery  execQuery() const{
         QSqlQuery q(sqlCon->getCon());
         q.setForwardOnly(true);
         if (q.prepare(toString())) {
