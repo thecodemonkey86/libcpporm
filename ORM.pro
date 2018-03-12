@@ -57,3 +57,11 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+
+CONFIG(release, debug|release) {
+    QMAKE_CXXFLAGS_RELEASE -= -O
+    QMAKE_CXXFLAGS_RELEASE -= -O1
+    QMAKE_CXXFLAGS_RELEASE -= -O2
+    QMAKE_CXXFLAGS_RELEASE *= -O3
+}
