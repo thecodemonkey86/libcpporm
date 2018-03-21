@@ -14,6 +14,9 @@ protected:
     protected: Sql* sqlCon;
 public:
     BaseRepository(Sql* sqlCon);
+    void beginTransaction() const;
+    void commitTransaction() const;
+    void rollbackTransaction() const;
 protected :
     template <class T> void saveBean(const shared_ptr<T> & bean ) {
         if (bean->isInsertNew()){
