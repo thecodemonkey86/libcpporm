@@ -195,8 +195,42 @@ public:
         return *this;
     }
 
+    BeanQuery & where(const QString &  whereCond,const QList<QString>&params) {
+        this->params.append(params);
+        if (!conditions.empty()) {
+            this->conditions.append(SqlQuery::AND);
+        }
+        this->conditions.append(whereCond);
+        return *this;
+    }
+
+    BeanQuery & where(const QString &  whereCond,const QVector<QString>&params) {
+        for(const QString & s : params)
+            this->params.append(s);
+        if (!conditions.empty()) {
+            this->conditions.append(SqlQuery::AND);
+        }
+        this->conditions.append(whereCond);
+        return *this;
+    }
+
     BeanQuery & andWhere(const QString &  whereCond,const QList<QVariant>&params) {
         this->params.append(params);
+        this->conditions.append(SqlQuery::AND);
+        this->conditions.append(whereCond);
+        return *this;
+    }
+
+    BeanQuery & andWhere(const QString &  whereCond,const QList<QString>&params) {
+        this->params.append(params);
+        this->conditions.append(SqlQuery::AND);
+        this->conditions.append(whereCond);
+        return *this;
+    }
+
+    BeanQuery & andWhere(const QString &  whereCond,const QVector<QString>&params) {
+        for(const QString & s : params)
+            this->params.append(s);
         this->conditions.append(SqlQuery::AND);
         this->conditions.append(whereCond);
         return *this;
