@@ -48,16 +48,11 @@ public:
 
 
 
-//    static BeanQuery<T> createQuery(Sql* sqlCon, unique_ptr<SqlQuery> qu) {
-//        return std::move(unique_ptr<T>(new BeanQuery<T>(sqlCon,std::move(qu))));
-//    }
-
     BeanQuery & select() {
         this->mainBeanAlias = QStringLiteral("b1");
         this->selectFields = T::getAllSelectFields(mainBeanAlias);
         this->fromTable = T::getTableName(mainBeanAlias);
         T::addRelatedTableJoins(*this);
-       // qu = + QString(" FROM ") + ;
         return *this;
     }
 
