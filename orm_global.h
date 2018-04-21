@@ -8,7 +8,6 @@
 #else
 #  define ORMSHARED_EXPORT Q_DECL_IMPORT
 #endif
-#include "beanquery.h"
 
 
 #endif // ORM_GLOBAL_H
