@@ -12,7 +12,7 @@ TARGET = ORM
 TEMPLATE = lib
 
 DEFINES += ORM_LIBRARY
-
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG += c++14
 
 SOURCES += \

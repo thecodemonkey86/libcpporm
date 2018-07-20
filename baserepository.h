@@ -14,9 +14,11 @@ protected:
     protected: Sql* sqlCon;
 public:
     BaseRepository(Sql* sqlCon);
-    void beginTransaction() const;
-    void commitTransaction() const;
-    void rollbackTransaction() const;
+    bool beginTransaction() const;
+    bool commitTransaction() const;
+    bool rollbackTransaction() const;
+    Sql *getSqlCon() const;
+
 protected :
     template <class T> void saveBean(const shared_ptr<T> & bean ) {
         if (bean->isInsertNew()){
@@ -42,6 +44,9 @@ protected :
                 QString query = QStringLiteral("UPDATE %1 SET %2 WHERE %3").arg(bean->getTableName(),updateFields,bean->getUpdateCondition());
                  QList<QVariant> conditionParams=  bean->getUpdateConditionParams();
                 params.append(conditionParams);
+#ifdef QT_DEBUG
+                qDebug() << query;
+#endif
                 sqlCon->execute(query,params);
             }
         }
