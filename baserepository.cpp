@@ -1,22 +1,27 @@
 #include "baserepository.h"
 
+Sql *BaseRepository::getSqlCon() const
+{
+    return sqlCon;
+}
+
 BaseRepository::BaseRepository(Sql *sqlCon)
 {
     this->sqlCon = sqlCon;
 }
 
-void BaseRepository::beginTransaction() const
+bool BaseRepository::beginTransaction() const
 {
-    this->sqlCon->beginTransaction();
+    return this->sqlCon->beginTransaction();
 }
 
-void BaseRepository::commitTransaction() const
+bool BaseRepository::commitTransaction() const
 {
-    this->sqlCon->commitTransaction();
+    return this->sqlCon->commitTransaction();
 }
 
-void BaseRepository::rollbackTransaction() const
+bool BaseRepository::rollbackTransaction() const
 {
-    this->sqlCon->rollbackTransaction();
+    return  this->sqlCon->rollbackTransaction();
 }
 
