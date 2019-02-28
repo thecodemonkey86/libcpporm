@@ -11,7 +11,7 @@ using namespace std;
 class ORMSHARED_EXPORT BaseRepository
 {
 protected:
-    protected: Sql* sqlCon;
+protected: Sql* sqlCon;
 public:
     BaseRepository(Sql* sqlCon);
     bool beginTransaction() const;
@@ -20,10 +20,42 @@ public:
     Sql *getSqlCon() const;
 
 protected :
+    template <class T> void bulkInsert(const QVector<shared_ptr<T>> & beans ) {
+        if(!beans.isEmpty()) {
+            auto bean0 = beans[0];
+            QString sql = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(bean0->getTableName(), bean0->getInsertFields(), bean0->getInsertValuePlaceholders());
+            QSqlQuery q(sqlCon->getCon());
+            bool res = q.prepare(sql);
+            for(const auto & bean : beans) {
+                QList<QVariant> params=bean->getInsertParams();
+                for(int i = 0; i < params.size(); i++) {
+                    q.addBindValue(params.at(i));
+
+                }
+                if (bean->isAutoIncrement()) {
+
+                    res &= q.exec();
+                    int id = q.lastInsertId().toInt();
+                    bean->setAutoIncrementId(id);
+                    bean->setInsertNew(false);
+
+                } else {
+                    res &= q.exec();
+                    bean->setInsertNew(false);
+                }
+            }
+
+            if(!res) {
+                throw SqlException(q.lastError().number(),q.lastError().text());
+            }
+
+        }
+    }
+
     template <class T> void saveBean(const shared_ptr<T> & bean ) {
         if (bean->isInsertNew()){
             QString query = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(bean->getTableName(), bean->getInsertFields(), bean->getInsertValuePlaceholders());
-             QList<QVariant> params=bean->getInsertParams();
+            QList<QVariant> params=bean->getInsertParams();
             if (bean->isAutoIncrement()) {
 
                 int id=sqlCon->insert(query,params);
@@ -32,7 +64,7 @@ protected :
                 bean->setInsertNew(false);
 
             } else {
-               sqlCon->execute(query,params);
+                sqlCon->execute(query,params);
                 bean->setInsertNew(false);
             }
         } else  {
@@ -42,7 +74,7 @@ protected :
             if (params.size() > 0) {
 
                 QString query = QStringLiteral("UPDATE %1 SET %2 WHERE %3").arg(bean->getTableName(),updateFields,bean->getUpdateCondition());
-                 QList<QVariant> conditionParams=  bean->getUpdateConditionParams();
+                QList<QVariant> conditionParams=  bean->getUpdateConditionParams();
                 params.append(conditionParams);
 #ifdef QT_DEBUG
                 qDebug() << query;
