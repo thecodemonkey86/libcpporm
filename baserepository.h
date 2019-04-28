@@ -52,7 +52,7 @@ protected :
         }
     }
 	
-	  /**
+    /**
      * bulk insert or update of many entity instances using one prepared statement
      */
     template <class T> void bulkSave(const QVector<shared_ptr<T>> & beans ) {
@@ -127,7 +127,7 @@ protected :
             QString query = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(bean->getTableName(), bean->getInsertFields(), bean->getInsertValuePlaceholders());
             QList<QVariant> params=bean->getInsertParams();
             if (bean->isAutoIncrement()) {
-
+                qDebug() << sqlCon->printDebug(query,params);
                 int id=sqlCon->insert(query,params);
 
                 bean->setAutoIncrementId(id);
