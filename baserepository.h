@@ -127,7 +127,9 @@ protected :
             QString query = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(bean->getTableName(), bean->getInsertFields(), bean->getInsertValuePlaceholders());
             QList<QVariant> params=bean->getInsertParams();
             if (bean->isAutoIncrement()) {
+                #ifdef QT_DEBUG
                 qDebug() << sqlCon->printDebug(query,params);
+                #endif
                 int id=sqlCon->insert(query,params);
 
                 bean->setAutoIncrementId(id);
