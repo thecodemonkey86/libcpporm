@@ -5,26 +5,33 @@
 #include <QList>
 #include <QVariant>
 #include "sqlcon.h"
+#include <QSqlQuery>
 #include "orm_global.h"
+#ifdef QT_DEBUG
+  #include <QDebug>
+#endif
+
 using namespace std;
+using namespace SqlUtil3;
 
 class ORMSHARED_EXPORT BaseRepository
 {
 protected:
-protected: Sql* sqlCon;
+protected: QSqlDatabase sqlCon;
 public:
-    BaseRepository(Sql* sqlCon);
+    BaseRepository(const QSqlDatabase & sqlCon);
     bool beginTransaction() const;
     bool commitTransaction() const;
     bool rollbackTransaction() const;
-    Sql *getSqlCon() const;
+
+    QSqlDatabase getSqlCon() const;
 
 protected :
     template <class T> void bulkInsert(const QVector<shared_ptr<T>> & beans ) {
         if(!beans.isEmpty()) {
             auto bean0 = beans[0];
             QString sql = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(bean0->getTableName(), bean0->getInsertFields(), bean0->getInsertValuePlaceholders());
-            QSqlQuery q(sqlCon->getCon());
+            QSqlQuery q(sqlCon);
             bool res = q.prepare(sql);
             for(const auto & bean : beans) {
                 QList<QVariant> params=bean->getInsertParams();
@@ -46,7 +53,7 @@ protected :
             }
 
             if(!res) {
-                throw SqlException(q.lastError().number(),q.lastError().text());
+                throw SqlUtil3::SqlException(sqlCon.lastError().nativeErrorCode(), sqlCon.driver()->lastError().text(),sql);
             }
 
         }
@@ -63,7 +70,7 @@ protected :
                     for(const auto & bean : beans) {
                         if (bean->isInsertNew()){
                             QString sql = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(b->getTableName(), b->getInsertFields(), b->getInsertValuePlaceholders());
-                            QSqlQuery q(sqlCon->getCon());
+                            QSqlQuery q(sqlCon);
                             bool res = q.prepare(sql);
                             for(const auto & bean : beans) {
                                 QList<QVariant> params=bean->getInsertParams();
@@ -82,7 +89,7 @@ protected :
                             }
 
                             if(!res) {
-                                throw SqlException(q.lastError().number(),q.lastError().text());
+                                throw SqlUtil3::SqlException(sqlCon.lastError().nativeErrorCode(), sqlCon.driver()->lastError().text(),sql);
                             }
                         }
                     }
@@ -104,7 +111,7 @@ protected :
 #ifdef QT_DEBUG
                                 qDebug() << query;
 #endif
-                                QSqlQuery q(sqlCon->getCon());
+                                QSqlQuery q(sqlCon);
                                 bool res = q.prepare(query);
                                 for(int i = 0; i < params.size(); i++) {
                                     q.addBindValue(params.at(i));
@@ -128,15 +135,15 @@ protected :
             QList<QVariant> params=bean->getInsertParams();
             if (bean->isAutoIncrement()) {
                 #ifdef QT_DEBUG
-                qDebug() << sqlCon->printDebug(query,params);
+                qDebug() << SqlUtil3::Sql::getDebugString(query,params);
                 #endif
-                int id=sqlCon->insert(query,params);
+                int id=SqlUtil3::Sql::insert(sqlCon, query,params);
 
                 bean->setAutoIncrementId(id);
                 bean->setInsertNew(false);
 
             } else {
-                sqlCon->execute(query,params);
+                SqlUtil3::Sql::execute(sqlCon, query,params);
                 bean->setInsertNew(false);
             }
         } else  {
@@ -151,7 +158,7 @@ protected :
 #ifdef QT_DEBUG
                 qDebug() << query;
 #endif
-                sqlCon->execute(query,params);
+                SqlUtil3::Sql::execute(sqlCon,query,params);
             }
         }
     }

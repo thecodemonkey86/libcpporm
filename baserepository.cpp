@@ -1,27 +1,28 @@
 #include "baserepository.h"
+#include <QSqlDriver>
 
-Sql *BaseRepository::getSqlCon() const
+QSqlDatabase BaseRepository::getSqlCon() const
 {
     return sqlCon;
 }
 
-BaseRepository::BaseRepository(Sql *sqlCon)
+BaseRepository::BaseRepository(const QSqlDatabase & sqlCon)
 {
     this->sqlCon = sqlCon;
 }
 
 bool BaseRepository::beginTransaction() const
 {
-    return this->sqlCon->beginTransaction();
+    return sqlCon.driver()->beginTransaction();
 }
 
 bool BaseRepository::commitTransaction() const
 {
-    return this->sqlCon->commitTransaction();
+    return sqlCon.driver()->commitTransaction();
 }
 
 bool BaseRepository::rollbackTransaction() const
 {
-    return  this->sqlCon->rollbackTransaction();
+    return sqlCon.driver()->rollbackTransaction();
 }
 

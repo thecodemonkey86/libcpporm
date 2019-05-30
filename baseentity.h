@@ -1,5 +1,5 @@
-#ifndef BASEBEAN_H
-#define BASEBEAN_H
+#ifndef BASEENTITY_H
+#define BASEENTITY_H
 #include <QString>
 #include "orm_global.h"
 #include "sqlcon.h"
@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class ORMSHARED_EXPORT BaseBean
+class ORMSHARED_EXPORT BaseEntity
 {
 protected:
     bool insert;
@@ -16,9 +16,9 @@ protected:
     bool autoIncrement, primaryKeyModified;
 
 public:
-    BaseBean();
-    BaseBean(bool insertNew);
-    virtual ~BaseBean();
+    BaseEntity();
+    BaseEntity(bool insertNew);
+    virtual ~BaseEntity();
 public:
     virtual void setAutoIncrementId(int id);
 
@@ -34,4 +34,4 @@ public:
     void setPrimaryKeyModified(bool value);
 };
 
-#endif // BASEBEAN_H
+#endif // BASEENTITY_H
