@@ -147,7 +147,7 @@ protected :
                 QList<QVariant> conditionParams=  bean->getUpdateConditionParams();
                 params.append(conditionParams);
 #ifdef QT_DEBUG
-                qDebug() << query;
+                qDebug() << sqlCon->printDebug(query,params);
 #endif
                 sqlCon->execute(query,params);
             }
