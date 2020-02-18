@@ -43,15 +43,12 @@ else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop
 
 }
 
-win32-msvc*  {
-MSVC_VER = $$(VisualStudioVersion)
-    equals(MSVC_VER, 15.0){
+msvc{
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/release -lSqlUtil3
         else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/debug/ -lSqlUtil3
 
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/release/ -lQtCommon2
         else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/debug/ -lQtCommon2
-    }
 }
 
 

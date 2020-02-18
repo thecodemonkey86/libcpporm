@@ -162,6 +162,13 @@ protected :
             }
         }
     }
+
+    template<class T> void upsertPg(const shared_ptr<T> & entity) {
+      QString query = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3) ON CONFLICT DO NOTHING").arg(entity->getTableName(), entity->getInsertFields(), entity->getInsertValuePlaceholders());
+      QList<QVariant> params=entity->getInsertParams();
+      SqlUtil3::Sql::execute(sqlCon, query,params);
+      entity->setInsertNew(false);
+    }
 };
 
 #endif // BASEREPOSITORY_H
