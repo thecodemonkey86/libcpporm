@@ -137,9 +137,7 @@ protected :
                 #ifdef QT_DEBUG
                 qDebug() << SqlUtil3::Sql::getDebugString(query,params);
                 #endif
-                int id=SqlUtil3::Sql::insert(sqlCon, query,params);
-
-                bean->setAutoIncrementId(id);
+                bean->setAutoIncrementId(SqlUtil3::Sql::insert(sqlCon, query,params));
                 bean->setInsertNew(false);
 
             } else {

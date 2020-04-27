@@ -18,9 +18,9 @@ protected:
 public:
     BaseEntity();
     BaseEntity(bool insertNew);
-    virtual ~BaseEntity();
+//    virtual ~BaseEntity();
 public:
-    virtual void setAutoIncrementId(int id);
+//    virtual void setAutoIncrementId(int id);
 
     bool isLoaded();
 
