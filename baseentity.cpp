@@ -52,15 +52,15 @@ BaseEntity::BaseEntity(bool insertNew)
     this->primaryKeyModified = false;
 }
 
-BaseEntity::~BaseEntity()
-{
+//BaseEntity::~BaseEntity()
+//{
 
-}
+//}
 
-void BaseEntity::setAutoIncrementId(int id)
-{
+//void BaseEntity::setAutoIncrementId(int id)
+//{
 
-}
+//}
 
 bool BaseEntity::isLoaded()
 {
