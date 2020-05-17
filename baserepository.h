@@ -71,35 +71,40 @@ public:
     }
 
 
-protected :
-    template <class T> void bulkInsert(const QVector<shared_ptr<T>> & beans ) {
-        if(!beans.isEmpty()) {
-            auto bean0 = beans[0];
-            QString sql = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(bean0->getTableName(), bean0->getInsertFields(), bean0->getInsertValuePlaceholders());
+    template <class T> void bulkInsert(const QVector<shared_ptr<T>> & entities ) {
+        if(!entities.isEmpty()) {
+            QString sql = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(T::getTableName(), T::getInsertFields(), T::getInsertValuePlaceholders());
             QSqlQuery q(sqlCon);
-            bool res = q.prepare(sql);
-            for(const auto & bean : beans) {
-                QList<QVariant> params=bean->getInsertParams();
-                for(int i = 0; i < params.size(); i++) {
-                    q.addBindValue(params.at(i));
+            if(!q.prepare(sql))
+            {
+                throwSqlExceptionWithLine(q.lastError().nativeErrorCode(),q.lastError().text(),q.lastQuery());
+            }
+            for(const auto & e : entities) {
+                QList<QVariant> params=e->getInsertParams();
+                for(const auto & p : params) {
+                    q.addBindValue(p);
 
                 }
-                if (bean->isAutoIncrement()) {
+                if (e->isAutoIncrement()) {
 
-                    res &= q.exec();
+                    if(!q.exec())
+                    {
+                        throwSqlExceptionWithLine(q.lastError().nativeErrorCode(),q.lastError().text(),q.lastQuery());
+                    }
                     int id = q.lastInsertId().toInt();
-                    bean->setAutoIncrementId(id);
-                    bean->setInsertNew(false);
+                    e->setAutoIncrementId(id);
+                    e->setInsertNew(false);
 
                 } else {
-                    res &= q.exec();
-                    bean->setInsertNew(false);
+                    if(!q.exec())
+                    {
+                        throwSqlExceptionWithLine(q.lastError().nativeErrorCode(),q.lastError().text(),q.lastQuery());
+                    }
+                    e->setInsertNew(false);
                 }
             }
 
-            if(!res) {
-                throw SqlUtil3::SqlException(sqlCon.lastError().nativeErrorCode(), sqlCon.driver()->lastError().text(),sql);
-            }
+
 
         }
     }
@@ -174,7 +179,7 @@ protected :
 
     }
 
-    template <class T> void saveBean(const shared_ptr<T> & entity ) {
+    template <class T> void save(const shared_ptr<T> & entity ) {
         if (entity->isInsertNew()){
             QString query = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(T::getTableName(), T::getInsertFields(), T::getInsertValuePlaceholders());
             QList<QVariant> params=entity->getInsertParams();
