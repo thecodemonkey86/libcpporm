@@ -24,32 +24,44 @@ HEADERS +=\
     nullable.h \
     orm_global.h \
     baserepository.h
+
+COMPILER = ""
+ARCH = ""
+
+msvc {
+
+ COMPILER = "MSVC2017"
+ MSVC_VER = $$(VisualStudioVersion)
+ equals(MSVC_VER, 16.0){
+     COMPILER = "MSVC2019"
+ }
+
+    equals(QMAKE_TARGET.arch, "x86_64"){
+        ARCH = "64bit"
+    } else {
+         ARCH = "32bit"
+    }
+
+}
+
+
 gcc {
+    COMPILER = "MinGW"
 
-contains(QT_ARCH, "x86_64"): {
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_64_bit/release/ -lSqlUtil3
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_64_bit/debug/ -lSqlUtil3
-
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_64_bit/release/ -lQtCommon2
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_64_bit/debug/ -lQtCommon2
+equals(QMAKE_TARGET.arch, "x86_64"){
+    ARCH = "64_bit"
 } else {
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_32bit/release/ -lSqlUtil3
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_32bit/debug/ -lSqlUtil3
-
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_32bit/release/ -lQtCommon2
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_32bit/debug/ -lQtCommon2
+     ARCH = "32_bit"
+}
 }
 
 
-}
+CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_$${COMPILER}_$${ARCH}/release -lSqlUtil3
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_$${COMPILER}_$${ARCH}/debug/ -lSqlUtil3
 
-msvc{
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/release -lSqlUtil3
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil3-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/debug/ -lSqlUtil3
+CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_$${COMPILER}_$${ARCH}/release/ -lQtCommon2
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_$${COMPILER}_$${ARCH}/debug/ -lQtCommon2
 
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/release/ -lQtCommon2
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/debug/ -lQtCommon2
-}
 
 
 INCLUDEPATH += $$PWD/../SqlUtil3
