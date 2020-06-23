@@ -15,6 +15,27 @@ DEFINES += ORM_LIBRARY
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG += c++14
 
+
+COMPILER = ""
+ARCH = ""
+
+msvc {
+
+ COMPILER = "MSVC2017"
+ MSVC_VER = $$(VisualStudioVersion)
+ equals(MSVC_VER, 16.0){
+     COMPILER = "MSVC2019"
+ }
+
+    equals(QT_ARCH, "x86_64"){
+        ARCH = "64bit"
+    } else {
+         ARCH = "32bit"
+    }
+
+}
+
+
 SOURCES += \
     basebean.cpp \
     baserepository.cpp
@@ -37,36 +58,11 @@ HEADERS +=\
   #  model/beans/track.h \
   #  model/beans/gig.h
 
-gcc {
+CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_$${COMPILER}_$${ARCH}/release -lSqlUtil2
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_$${COMPILER}_$${ARCH}/debug/ -lSqlUtil2
 
-contains(QT_ARCH, "x86_64"): {
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_64_bit/release/ -lSqlUtil2
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_64_bit/debug/ -lSqlUtil2
-
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_64_bit/release/ -lQtCommon2
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_64_bit/debug/ -lQtCommon2
-} else {
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_32bit/release/ -lSqlUtil2
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_32bit/debug/ -lSqlUtil2
-
-CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_32bit/release/ -lQtCommon2
-else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MinGW_32bit/debug/ -lQtCommon2
-}
-
-
-}
-
-win32-msvc*  {
-MSVC_VER = $$(VisualStudioVersion)
-    equals(MSVC_VER, 15.0){
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/release -lSqlUtil2
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/SqlUtil2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/debug/ -lSqlUtil2
-
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/release/ -lQtCommon2
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_MSVC2017_64bit/debug/ -lQtCommon2
-    }
-}
-
+CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_$${COMPILER}_$${ARCH}/release/ -lQtCommon2
+else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/QtCommon2-Desktop_Qt_$${QT_MAJOR_VERSION}_$${QT_MINOR_VERSION}_$${QT_PATCH_VERSION}_$${COMPILER}_$${ARCH}/debug/ -lQtCommon2
 
 INCLUDEPATH += $$PWD/../SqlUtil2
 
