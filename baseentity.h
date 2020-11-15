@@ -1,12 +1,11 @@
-#ifndef BASEENTITY_H
-#define BASEENTITY_H
+#pragma once
 #include <QString>
 #include "orm_global.h"
 #include "sqlcon.h"
 #include <QSet>
 #include <memory>
 
-using namespace std;
+namespace ORM2 {
 
 class ORMSHARED_EXPORT BaseEntity
 {
@@ -33,5 +32,4 @@ public:
     bool isPrimaryKeyModified() const;
     void setPrimaryKeyModified(bool value);
 };
-
-#endif // BASEENTITY_H
+}

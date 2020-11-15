@@ -16,8 +16,7 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG += c++1z
 
 SOURCES += \
-    baseentity.cpp \
-    baserepository.cpp
+    baseentity.cpp
 
 HEADERS +=\
     baseentity.h \

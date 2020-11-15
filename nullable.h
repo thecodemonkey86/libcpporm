@@ -1,5 +1,4 @@
-#ifndef NULLABLE_H
-#define NULLABLE_H
+#pragma once
 
 namespace ORM2 {
 template<class T>
@@ -54,4 +53,4 @@ protected:
 }
 
 
-#endif // NULLABLE_H
+
