@@ -21,7 +21,7 @@ ARCH = ""
 
 msvc {
 
- COMPILER = "MSVC2017"
+ COMPILER = "MSVC2019"
  MSVC_VER = $$(VisualStudioVersion)
  equals(MSVC_VER, 16.0){
      COMPILER = "MSVC2019"
@@ -35,6 +35,14 @@ msvc {
 
 }
 
+gcc {
+COMPILER = "MingW"
+equals(QT_ARCH, "x86_64"){
+    ARCH = "64_bit"
+} else {
+     ARCH = "32_bit"
+}
+}
 
 SOURCES += \
     basebean.cpp \
