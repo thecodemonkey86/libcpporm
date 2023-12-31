@@ -42,25 +42,9 @@ void ORM2::BaseEntity::setPrimaryKeyModified(bool value)
     primaryKeyModified = value;
 }
 
-ORM2::BaseEntity::BaseEntity() : BaseEntity(true)
+ORM2::BaseEntity::BaseEntity(bool autoIncrement) : insert(false),loaded(false),autoIncrement(autoIncrement),primaryKeyModified(false)
 {
 }
-
-ORM2::BaseEntity::BaseEntity(bool insertNew)
-{
-    this->insert = insertNew;
-    this->primaryKeyModified = false;
-}
-
-//ORM2::BaseEntity::~BaseEntity()
-//{
-
-//}
-
-//void ORM2::BaseEntity::setAutoIncrementId(int id)
-//{
-
-//}
 
 bool ORM2::BaseEntity::isLoaded()
 {

@@ -5,21 +5,43 @@
 #include <QVariant>
 #include <QSqlQuery>
 #include <QSqlError>
-#include "orm_global.h"
+#include <exception/sqlexception.h>
+#include <QSqlDriver>
 #include "sqlcon.h"
 #ifdef QT_DEBUG
 #include <QDebug>
 #endif
 namespace ORM2 {
 template <class DbConnectionPool>
-class ORMSHARED_EXPORT BaseRepository
+class  BaseRepository
 {
+BaseRepository()=delete ;
 public:
-    BaseRepository()=delete;
-    bool beginTransaction() const;
-    bool commitTransaction() const;
-    bool rollbackTransaction() const;
 
+   static void beginTransaction()
+   {
+     auto con = DbConnectionPool::getDatabase();
+     if(!con.driver()->beginTransaction())
+     {
+         throwSqlExceptionWithLine(con.driver()->lastError().nativeErrorCode(),con.driver()->lastError().text(),QString());
+     }
+   }
+   static void commitTransaction()
+   {
+     auto con = DbConnectionPool::getDatabase();
+     if(!con.driver()->commitTransaction())
+     {
+       throwSqlExceptionWithLine(con.driver()->lastError().nativeErrorCode(),con.driver()->lastError().text(),QString());
+     }
+   }
+   static void rollbackTransaction()
+   {
+     auto con = DbConnectionPool::getDatabase();
+     if(!con.driver()->rollbackTransaction())
+     {
+       throwSqlExceptionWithLine(con.driver()->lastError().nativeErrorCode(),con.driver()->lastError().text(),QString());
+     }
+   }
 
     template<class T>
    static QSqlQuery prepareInsert()
@@ -64,6 +86,7 @@ public:
             entity->setAutoIncrementId(preparedStmt.lastInsertId().toLongLong());
          }
          entity->setInsertNew(false);
+         entity->resetModifiedFlags();
     }
 
 
@@ -99,6 +122,7 @@ public:
                     }
                     e->setInsertNew(false);
                 }
+                e->resetModifiedFlags();
             }
 
 
@@ -109,114 +133,119 @@ public:
     /**
      * bulk insert or update of many entity instances using one prepared statement
      */
-    template <class T>
-   static void bulkSave(const QVector<std::shared_ptr<T>> & entities ) {
-        if(!entities.isEmpty()) {
+    template <class T> static void bulkSave(const QVector<std::shared_ptr<T>> & entities ) {
+      if(!entities.isEmpty()) {
 
-            for(const auto & b : entities) {
-                if (b->isInsertNew()){
-                    for(const auto & bean : entities) {
-                        if (bean->isInsertNew()){
-                            QString sql = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(b->getTableName(), b->getInsertFields(), b->getInsertValuePlaceholders());
-                            QSqlQuery q(DbConnectionPool::getDatabase());
-                            bool res = q.prepare(sql);
-                            for(const auto & bean : entities) {
-                                QList<QVariant> params=bean->getInsertParams();
-                                for(int i = 0; i < params.size(); i++) {
-                                    q.addBindValue(params.at(i));
+        for(const auto & entity : entities) {
+          if (entity->isInsertNew()){
+            QString sql = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(entity->getTableName(), entity->getInsertFields(), entity->getInsertValuePlaceholders());
+            QSqlQuery q(DbConnectionPool::getDatabase());
+            bool res = q.prepare(sql);
+            for(const auto & entity : entities) {
+              QList<QVariant> params=entity->getInsertParams();
+              for(int i = 0; i < params.size(); i++) {
+                q.addBindValue(params.at(i));
 
-                                }
-                                res &= q.exec();
-                                if (bean->isAutoIncrement()) {
+              }
+              res &= q.exec();
+              if (entity->isAutoIncrement()) {
 
 
-                                    int id = q.lastInsertId().toInt();
-                                    bean->setAutoIncrementId(id);
-                                }
-                                bean->setInsertNew(false);
-                            }
-
-                            if(!res) {
-                                throw SqlUtil3::SqlException(DbConnectionPool::getDatabase().lastError().nativeErrorCode(), DbConnectionPool::getDatabase().driver()->lastError().text(),sql);
-                            }
-                        }
-                    }
-                    break;
-                }
+                int id = q.lastInsertId().toInt();
+                entity->setAutoIncrementId(id);
+              }
+              entity->setInsertNew(false);
+              entity->resetModifiedFlags();
             }
-            for(const auto & b : entities) {
-                if (!b->isInsertNew()){
-                    for(const auto & bean : entities) {
-                        if (!bean->isInsertNew()){
-                            QList<QVariant> params;
-                            QString updateFields = bean->getUpdateFields(&params).join(QChar(','));
 
-                            if (params.size() > 0) {
-
-                                QString query = QStringLiteral("UPDATE %1 SET %2 WHERE %3").arg(bean->getTableName(),updateFields,bean->getUpdateCondition());
-                                QList<QVariant> conditionParams=  bean->getUpdateConditionParams();
-                                params.append(conditionParams);
-#ifdef QT_DEBUG
-                                qDebug() << query;
-#endif
-                                QSqlQuery q(DbConnectionPool::getDatabase());
-                                bool res = q.prepare(query);
-                                for(int i = 0; i < params.size(); i++) {
-                                    q.addBindValue(params.at(i));
-
-                                }
-                                res &= q.exec();
-                            }
-                        }
-                    }
-                    break;
-                }
+            if(!res) {
+              throw SqlUtil4::SqlException(q.lastError().nativeErrorCode(), q.driver()->lastError().text(),sql);
             }
+
+            break;
+          }
+
         }
 
 
-    }
-
-    template <class T>
-   static void save(const std::shared_ptr<T> & entity ) {
-        if (entity->isInsertNew()){
-            QString query = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(T::getTableName(), T::getInsertFields(), T::getInsertValuePlaceholders());
-            QList<QVariant> params=entity->getInsertParams();
-            if (entity->isAutoIncrement()) {
-#ifdef QT_DEBUG
-                qDebug() << SqlUtil3::Sql::getDebugString(query,params);
-#endif
-                entity->setAutoIncrementId(SqlUtil3::Sql::insert(DbConnectionPool::getDatabase(), query,params));
-
-            } else {
-                SqlUtil3::Sql::execute(DbConnectionPool::getDatabase(), query,params);
-            }
-             entity->setInsertNew(false);
-        } else  {
+        for(const auto & entity : entities) {
+          if (!entity->isInsertNew()){
             QList<QVariant> params;
             QString updateFields = entity->getUpdateFields(&params).join(QChar(','));
 
             if (params.size() > 0) {
 
-                QString query = QStringLiteral("UPDATE %1 SET %2 WHERE %3").arg(T::getTableName(),updateFields,entity->getUpdateCondition());
-                QList<QVariant> conditionParams=  entity->getUpdateConditionParams();
+              QString query = QStringLiteral("UPDATE %1 SET %2 WHERE %3").arg(entity->getTableName(),updateFields,entity->getUpdateCondition());
+              QList<QVariant> conditionParams=  entity->getUpdateConditionParams();
+              params.append(conditionParams);
+#ifdef QT_DEBUG
+              qDebug() << query;
+#endif
+              QSqlQuery q(DbConnectionPool::getDatabase());
+              if(!q.prepare(query))
+              {
+                  throwSqlExceptionWithLine(q.lastError().nativeErrorCode(),q.lastError().text(),q.lastQuery());
+              }
+              for(int i = 0; i < params.size(); i++) {
+                q.addBindValue(params.at(i));
+
+              }
+              if(!q.exec())
+              {
+                   throwSqlExceptionWithLine(q.lastError().nativeErrorCode(),q.lastError().text(),q.lastQuery());
+              }
+               entity->resetModifiedFlags();
+            }
+          }
+        }
+
+        }
+
+
+
+    }
+
+    template <class T> static void save(std::shared_ptr<T> entity ) {
+      save(*entity);
+    }
+
+
+   template <class T> static void save(T & entity ) {
+        if (entity.isInsertNew()){
+            QString query = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)").arg(T::getTableName(), T::getInsertFields(), T::getInsertValuePlaceholders());
+            QList<QVariant> params=entity.getInsertParams();
+            if (entity.isAutoIncrement()) {
+#ifdef QT_DEBUG
+                qDebug() << SqlUtil4::Sql::getDebugString(query,params);
+#endif
+                entity.setAutoIncrementId(SqlUtil4::Sql::insert(DbConnectionPool::getDatabase(), query,params));
+
+            } else {
+                SqlUtil4::Sql::execute(DbConnectionPool::getDatabase(), query,params);
+            }
+             entity.setInsertNew(false);
+             entity.resetModifiedFlags();
+        } else  {
+            QList<QVariant> params;
+            QString updateFields = entity.getUpdateFields(&params).join(QChar(','));
+
+            if (params.size() > 0) {
+
+                QString query = QStringLiteral("UPDATE %1 SET %2 WHERE %3").arg(T::getTableName(),updateFields,entity.getUpdateCondition());
+                QList<QVariant> conditionParams=  entity.getUpdateConditionParams();
                 params.append(conditionParams);
 #ifdef QT_DEBUG
-                qDebug() << query;
+                qDebug() << SqlUtil4::Sql::getDebugString(query,params);
 #endif
-                SqlUtil3::Sql::execute(DbConnectionPool::getDatabase(),query,params);
+                SqlUtil4::Sql::execute(DbConnectionPool::getDatabase(),query,params);
+                entity.resetModifiedFlags();
             }
         }
     }
 
-    template<class T>
-   static void insertOrIgnorePg(const std::shared_ptr<T> & entity) {
-        QString query = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3) ON CONFLICT DO NOTHING").arg(T::getTableName(), T::getInsertFields(), T::getInsertValuePlaceholders());
-        QList<QVariant> params=entity->getInsertParams();
-        SqlUtil3::Sql::execute(DbConnectionPool::getDatabase(), query,params);
-        entity->setInsertNew(false);
-    }
 
 };
+
+
 }
 

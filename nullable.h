@@ -5,26 +5,16 @@ template<class T>
 class Nullable
 {
 public:
-    Nullable(T val) {
-        this->value = val;
-        this->valIsNull = false;
-    }
+  Nullable(T val) :value(val),valIsNull(false) {
+  }
 
-    Nullable() {
-        this->valIsNull = true;
-    }
+  Nullable() : valIsNull(true) {
+  }
 
-    ~Nullable(){
+  ~Nullable(){
 
-    }
+  }
 
-//    static Nullable<int> integer(int val) {
-//       return Nullable<int>(val);
-//    }
-
-//    static Nullable<int> integer(const QVariant& val) {
-//       return val.isNull() ? Nullable<int>() : Nullable<int>(val.toInt());
-//    }
 protected:
     bool valIsNull;
 
@@ -46,6 +36,14 @@ protected:
 
     const T & val() const {
         return value;
+    }
+
+    bool operator ==(const Nullable<T> & other)const {
+        return valIsNull == other.valIsNull && value == other.value;
+    }
+
+    bool operator !=(const Nullable<T> & other)const {
+        return !(*this == other);
     }
 };
 
