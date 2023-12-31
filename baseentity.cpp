@@ -2,67 +2,49 @@
 #include <QString>
 
 
-void ORM2::BaseEntity::setLoaded(bool value)
+void BaseEntity::setLoaded(bool value)
 {
     loaded = value;
 }
 
-bool ORM2::BaseEntity::isInsertNew() const
+bool BaseEntity::isInsertNew() const
 {
     return insert;
 }
 
-void ORM2::BaseEntity::setInsertNew()
+void BaseEntity::setInsertNew()
 {
     this->insert = true;
 }
 
-void ORM2::BaseEntity::setInsertNew(bool value)
+void BaseEntity::setInsertNew(bool value)
 {
     insert = value;
 }
 
-bool ORM2::BaseEntity::isAutoIncrement() const
+bool BaseEntity::isAutoIncrement() const
 {
     return autoIncrement;
 }
 
-void ORM2::BaseEntity::setAutoIncrement(bool value)
+void BaseEntity::setAutoIncrement(bool value)
 {
     autoIncrement = value;
 }
 
-bool ORM2::BaseEntity::isPrimaryKeyModified() const
+bool BaseEntity::isPrimaryKeyModified() const
 {
     return primaryKeyModified;
 }
 
-void ORM2::BaseEntity::setPrimaryKeyModified(bool value)
-{
-    primaryKeyModified = value;
-}
 
-ORM2::BaseEntity::BaseEntity() : BaseEntity(true)
+
+BaseEntity::BaseEntity(bool autoIncrement) : insert(false),loaded(false),autoIncrement(autoIncrement),primaryKeyModified(false)
 {
 }
 
-ORM2::BaseEntity::BaseEntity(bool insertNew)
-{
-    this->insert = insertNew;
-    this->primaryKeyModified = false;
-}
 
-//ORM2::BaseEntity::~BaseEntity()
-//{
-
-//}
-
-//void ORM2::BaseEntity::setAutoIncrementId(int id)
-//{
-
-//}
-
-bool ORM2::BaseEntity::isLoaded()
+bool BaseEntity::isLoaded()
 {
     return loaded;
 }

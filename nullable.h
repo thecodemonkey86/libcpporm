@@ -1,30 +1,22 @@
-#pragma once
+#ifndef NULLABLE_H
+#define NULLABLE_H
 
 namespace ORM2 {
 template<class T>
 class Nullable
 {
 public:
-    Nullable(T val) {
-        this->value = val;
-        this->valIsNull = false;
+    Nullable(T val) :value(val),valIsNull(false) {
     }
 
-    Nullable() {
-        this->valIsNull = true;
+    Nullable() : valIsNull(true) {
     }
 
     ~Nullable(){
 
     }
 
-//    static Nullable<int> integer(int val) {
-//       return Nullable<int>(val);
-//    }
 
-//    static Nullable<int> integer(const QVariant& val) {
-//       return val.isNull() ? Nullable<int>() : Nullable<int>(val.toInt());
-//    }
 protected:
     bool valIsNull;
 
@@ -53,4 +45,4 @@ protected:
 }
 
 
-
+#endif // NULLABLE_H

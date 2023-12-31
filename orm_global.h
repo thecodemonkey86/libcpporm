@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ORM_GLOBAL_H
+#define ORM_GLOBAL_H
 
 #include <QtCore/qglobal.h>
 
@@ -9,3 +10,4 @@
 #endif
 
 
+#endif // ORM_GLOBAL_H
